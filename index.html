@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f5ef">
+  <title>ACIO Calculator — All calculations, one place</title>
+  <meta name="description" content="A collection of practical calculators for everyday maths, science, conversions, dates, loans, and health.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--paper:#f6f5ef;--white:#fffefa;--ink:#20251f;--muted:#777b72;--line:#e8e7df;--green:#28674e;--green-dark:#1b4f3b;--lime:#d6f36a;--coral:#ec785c;--mono:'DM Mono',monospace;--sans:'Manrope',sans-serif;--shadow:0 18px 52px rgba(33,39,31,.075)}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);min-height:100vh}
+    button,input,select{font:inherit}
+    button{color:inherit}
+    .app{min-height:100vh;display:grid;grid-template-columns:252px minmax(0,1fr)}
+    .sidebar{background:#eeeee6;border-right:1px solid #e5e5dc;padding:25px 16px 20px;display:flex;flex-direction:column;min-height:100vh}
+    .brand{display:flex;align-items:center;gap:11px;padding:2px 10px 28px}
+    .brand-mark{width:38px;height:38px;border-radius:12px;background:var(--green);display:grid;place-items:center;color:var(--lime);font-size:21px;font-weight:800;box-shadow:0 5px 12px #28674e28}
+    .brand-name{font-size:16px;font-weight:800;letter-spacing:0}
+    .brand-name span{display:block;font-size:10px;color:var(--muted);font-weight:600;margin-top:2px}
+    .nav-label{padding:8px 11px 9px;font-size:10px;font-weight:800;color:#92958c;text-transform:uppercase;letter-spacing:1.25px}
+    .nav-list{display:grid;gap:4px;margin-bottom:19px}
+    .nav-item{height:42px;width:100%;border:0;background:transparent;border-radius:8px;display:flex;align-items:center;gap:11px;text-align:left;padding:0 11px;color:#666b62;font-weight:650;font-size:12px;cursor:pointer;transition:background .18s,color .18s,transform .18s}
+    .nav-item:hover{background:#e6e7dd;color:var(--ink);transform:translateX(2px)}
+    .nav-item.active{background:var(--green);color:white;box-shadow:0 5px 12px #28674e26}
+    .nav-glyph{width:20px;text-align:center;font-family:var(--mono);font-size:16px;color:#858a7e}
+    .nav-item.active .nav-glyph{color:var(--lime)}
+    .sidebar-bottom{margin-top:auto;padding:15px 10px 0;border-top:1px solid #dcddd4;color:#888c83;font-size:10px;line-height:1.7}
+    .sidebar-bottom strong{color:#575e53;font-weight:700}
+    .main{min-width:0;padding:0 38px 45px}
+    .topbar{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);margin-bottom:36px}
+    .breadcrumb{font-size:11px;color:#858980;font-weight:600}.breadcrumb b{color:#333a31;font-weight:700}
+    .top-right{display:flex;align-items:center;gap:9px}
+    .local-pill{display:flex;align-items:center;gap:7px;border:1px solid #e3e4da;border-radius:20px;padding:7px 11px;font-size:10px;color:#666d61;font-weight:700;background:#fafaf5}
+    .local-dot{width:7px;height:7px;border-radius:50%;background:#71a977;box-shadow:0 0 0 3px #71a97720}
+    .avatar{width:31px;height:31px;display:grid;place-items:center;border-radius:50%;background:#f2d0bd;color:#854a34;font-size:10px;font-weight:800}
+    .content{max-width:1100px;margin:0 auto;animation:appear .4s ease both}
+    @keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--green);font-weight:800;display:flex;align-items:center;gap:8px}
+    .eyebrow:before{content:"";width:17px;height:2px;background:var(--coral);border-radius:2px}
+    h1{font-size:30px;line-height:1.2;letter-spacing:0;margin:10px 0 7px;font-weight:800}
+    .intro{font-size:12px;color:var(--muted);margin:0;line-height:1.65}
+    .workspace{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(285px,.78fr);gap:22px;margin-top:27px;align-items:start}
+    .tool-panel{background:var(--white);border:1px solid #e9e8e0;border-radius:10px;box-shadow:var(--shadow);overflow:hidden}
+    .panel-head{height:58px;padding:0 20px;border-bottom:1px solid #efeee8;display:flex;align-items:center;justify-content:space-between}
+    .panel-title{font-size:12px;font-weight:800;display:flex;align-items:center;gap:9px}
+    .panel-symbol{width:25px;height:25px;border-radius:7px;background:#edf3e8;color:var(--green);display:grid;place-items:center;font-family:var(--mono);font-size:14px}
+    .panel-meta{font-size:10px;color:#979a90;font-weight:600}
+    .calculator-body{padding:20px}
+    .display{background:#f4f5ef;border:1px solid #eceee5;border-radius:8px;padding:14px 16px 13px;min-height:99px;margin-bottom:13px;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;overflow:hidden}
+    .expression{font-family:var(--mono);font-size:12px;color:#8b9085;min-height:18px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .result{font-family:var(--mono);font-size:34px;font-weight:500;letter-spacing:0;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#253b2d}
+    .keypad{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+    .key{height:46px;border:1px solid #ecece5;border-radius:7px;background:#fffefa;font-family:var(--mono);font-size:15px;cursor:pointer;transition:transform .14s,background .14s,border-color .14s;user-select:none}
+    .key:hover{background:#f3f4ed;border-color:#d9ddd0;transform:translateY(-1px)}
+    .key:active{transform:translateY(1px)}
+    .key.utility{background:#f0f1ea;color:#535d50;font-size:12px}
+    .key.operator{background:#eff3e9;color:var(--green);font-size:18px}
+    .key.equals{background:var(--green);border-color:var(--green);color:white;font-size:19px}
+    .key.equals:hover{background:var(--green-dark)}
+    .scientific-keys{display:none;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:9px}
+    .scientific-keys.visible{display:grid}
+    .key.sci{height:36px;font-size:11px;background:#f6f6f0;color:#596253}
+    .calc-footer{display:flex;justify-content:space-between;align-items:center;margin-top:13px;font-size:9px;color:#989b92}
+    kbd{font-family:var(--mono);font-size:9px;border:1px solid #dedfd6;border-radius:4px;padding:2px 4px;background:#fafaf7;color:#70766a}
+    .right-stack{display:grid;gap:16px}
+    .quick-panel{padding:18px 18px 16px}
+    .side-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .side-heading strong{font-size:12px;font-weight:800}
+    .side-heading span{font-family:var(--mono);font-size:9px;color:#989b92}
+    .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .quick-tile{border:1px solid #ecece5;border-radius:7px;background:#fffefa;min-height:66px;padding:10px 11px;text-align:left;cursor:pointer;transition:border .16s,transform .16s}
+    .quick-tile:hover{border-color:#b9c9af;transform:translateY(-2px)}
+    .quick-tile .qicon{font-family:var(--mono);font-size:14px;color:var(--green);display:block;margin-bottom:5px}
+    .quick-tile strong{font-size:10px;display:block}
+    .quick-tile small{font-size:9px;color:#96998f;display:block;margin-top:2px}
+    .history-panel{padding:18px}
+    .history-empty{font-size:10px;line-height:1.6;color:#96998f;padding:11px 0 3px}
+    .history-list{display:grid;gap:0}
+    .history-row{padding:9px 0;border-bottom:1px solid #f0efe9;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .history-row:last-child{border-bottom:0;padding-bottom:0}
+    .history-expression{font:10px var(--mono);color:#81867b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .history-result{font:11px var(--mono);font-weight:500;color:#3c624c;white-space:nowrap}
+    .form-body{padding:22px 20px 20px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px 12px}
+    .field{display:grid;gap:6px;min-width:0}
+    .field.full{grid-column:1/-1}
+    .field label{font-size:10px;color:#74796f;font-weight:750}
+    .field input,.field select{width:100%;height:41px;padding:0 11px;border:1px solid #e5e6de;border-radius:6px;background:#fffefa;color:#333a31;font:12px var(--mono);outline:none;transition:border .15s,box-shadow .15s}
+    .field input:focus,.field select:focus{border-color:#79a087;box-shadow:0 0 0 3px #28674e14}
+    .field select{font-family:var(--sans);font-size:11px}
+    .input-with-unit{position:relative}.input-with-unit input{padding-right:47px}.unit-suffix{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:10px;color:#999d91}
+    .form-submit{width:100%;height:43px;border:0;border-radius:6px;background:var(--green);color:#fff;font-size:11px;font-weight:800;cursor:pointer;margin-top:18px;transition:background .16s,transform .16s}
+    .form-submit:hover{background:var(--green-dark);transform:translateY(-1px)}
+    .answer-box{margin-top:15px;padding:14px 15px;background:#f1f5eb;border:1px solid #e5edda;border-radius:7px;display:none;animation:appear .24s ease both}
+    .answer-box.show{display:block}
+    .answer-label{font-size:9px;text-transform:uppercase;letter-spacing:1.1px;color:#7e8977;font-weight:800}
+    .answer-value{font:24px var(--mono);color:#28563f;margin-top:6px;overflow-wrap:anywhere}
+    .answer-detail{font-size:10px;color:#777e70;line-height:1.6;margin-top:5px}
+    .swap-row{display:flex;align-items:end;gap:8px}.swap-row .field{flex:1;min-width:0}.swap-btn{height:41px;width:38px;flex:0 0 38px;border:1px solid #e5e6de;border-radius:6px;background:#f5f5ef;color:var(--green);font-size:17px;cursor:pointer}
+    .unit-input-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}
+    .unit-output{background:#f1f5eb;border:1px solid #e5edda;border-radius:7px;padding:13px 14px;margin-top:14px}
+    .unit-output .answer-value{font-size:21px;margin-top:5px}
+    .note{font-size:9px;color:#999d91;margin-top:13px;line-height:1.6}
+    .footer-line{margin-top:26px;padding-top:13px;border-top:1px solid var(--line);color:#9b9e94;font-size:9px;display:flex;justify-content:space-between}
+    .toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,12px);opacity:0;pointer-events:none;padding:10px 14px;background:#28372c;color:white;font-size:11px;border-radius:6px;box-shadow:var(--shadow);transition:opacity .2s,transform .2s;z-index:5}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    .mobile-brand{display:none}
+    @media(max-width:920px){.app{grid-template-columns:215px minmax(0,1fr)}.sidebar{padding-left:12px;padding-right:12px}.main{padding:0 24px 36px}.workspace{grid-template-columns:minmax(0,1fr)}.right-stack{grid-template-columns:1fr 1fr}.quick-panel,.history-panel{min-width:0}}
+    @media(max-width:640px){.app{display:block;padding-bottom:69px}.sidebar{position:fixed;z-index:4;left:0;right:0;bottom:0;top:auto;min-height:0;height:63px;padding:5px 8px calc(5px + env(safe-area-inset-bottom));border-right:0;border-top:1px solid #dedfd7;background:#f6f5ef;display:block}.brand,.nav-label,.sidebar-bottom{display:none}.nav-list{display:flex;justify-content:space-around;gap:3px;margin:0;height:100%}.nav-item{height:51px;min-width:48px;flex-direction:column;justify-content:center;gap:2px;padding:3px 6px;border-radius:7px;font-size:8px}.nav-glyph{height:18px;font-size:15px}.main{padding:0 16px 25px}.topbar{height:57px;margin-bottom:27px}.local-pill{font-size:9px;padding:6px 8px}.avatar{width:28px;height:28px}.workspace{margin-top:21px;gap:14px}.right-stack{grid-template-columns:1fr}.panel-head{height:52px;padding:0 15px}.calculator-body{padding:14px}.keypad{gap:6px}.key{height:47px}.result{font-size:30px}.form-body{padding:18px 15px}.footer-line{margin-top:20px}.footer-line span:last-child{display:none}h1{font-size:26px}.intro{font-size:11px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Calculator tools">
+      <div class="brand"><div class="brand-mark">a.</div><div class="brand-name">ACIO<span>All calculations in one</span></div></div>
+      <div class="nav-label">Everyday</div>
+      <nav class="nav-list" aria-label="Everyday calculators">
+        <button class="nav-item active" data-tool="basic"><span class="nav-glyph">＋</span>Standard</button>
+        <button class="nav-item" data-tool="scientific"><span class="nav-glyph">√</span>Scientific</button>
+        <button class="nav-item" data-tool="percentage"><span class="nav-glyph">％</span>Percentage</button>
+        <button class="nav-item" data-tool="converter"><span class="nav-glyph">⇄</span>Unit converter</button>
+        <button class="nav-item" data-tool="date"><span class="nav-glyph">▦</span>Date &amp; time</button>
+      </nav>
+      <div class="nav-label">More tools</div>
+      <nav class="nav-list" aria-label="More calculators">
+        <button class="nav-item" data-tool="loan"><span class="nav-glyph">$</span>Loan &amp; interest</button>
+        <button class="nav-item" data-tool="bmi"><span class="nav-glyph">⌁</span>BMI calculator</button>
+      </nav>
+      <div class="sidebar-bottom"><strong>One place. Every answer.</strong><br>Built for quick checks and big questions.</div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div class="breadcrumb">Workspace <span> / </span> <b id="crumb">Standard</b></div><div class="top-right"><div class="local-pill"><span class="local-dot"></span>Ready to calculate</div><div class="avatar" aria-label="ACIO">A</div></div></header>
+      <div class="content" id="content"></div>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+    const toolInfo={
+      basic:{title:'Standard calculator',description:'The everyday essential. A clear space for quick sums, careful checks, and everything in between.',symbol:'＋'},
+      scientific:{title:'Scientific calculator',description:'Go beyond the basics with trigonometry, logarithms, powers, and roots.',symbol:'√'},
+      percentage:{title:'Percentage calculator',description:'Work out a percentage of a number, or see exactly how much a value changed.',symbol:'％'},
+      converter:{title:'Unit converter',description:'Move between units for length, weight, temperature, area, and digital storage.',symbol:'⇄'},
+      date:{title:'Date & time calculator',description:'Count the time between two dates, or find a date by adding or subtracting days.',symbol:'▦'},
+      loan:{title:'Loan & interest calculator',description:'Estimate monthly repayments and the total cost across the life of a loan.',symbol:'$'},
+      bmi:{title:'BMI calculator',description:'Estimate body mass index from height and weight, with the standard adult ranges.',symbol:'⌁'}
+    };
+    let activeTool='basic';
+    let expression='';
+    let answer='0';
+    let justEvaluated=false;
+    let history=[];
+    const content=document.querySelector('#content');
+    const crumb=document.querySelector('#crumb');
+    const fmt=(n,max=8)=>Number.isFinite(n)?new Intl.NumberFormat('en-US',{maximumFractionDigits:max}).format(n):'—';
+    function baseMarkup(info,body){return `<div class="eyebrow">Your calculation space</div><h1>${info.title}</h1><p class="intro">${info.description}</p><section class="workspace"><div class="tool-panel"><div class="panel-head"><div class="panel-title"><span class="panel-symbol">${info.symbol}</span>${info.title}</div><span class="panel-meta">ACIO TOOLKIT</span></div>${body}</div><div class="right-stack"><section class="tool-panel quick-panel"><div class="side-heading"><strong>Jump into a tool</strong><span>QUICK ACCESS</span></div><div class="quick-grid"><button class="quick-tile" data-jump="percentage"><span class="qicon">％</span><strong>Percentage</strong><small>Find a portion or change</small></button><button class="quick-tile" data-jump="converter"><span class="qicon">⇄</span><strong>Unit converter</strong><small>Convert everyday units</small></button><button class="quick-tile" data-jump="date"><span class="qicon">▦</span><strong>Date &amp; time</strong><small>Count days between dates</small></button><button class="quick-tile" data-jump="loan"><span class="qicon">$</span><strong>Loan estimate</strong><small>Monthly payment &amp; interest</small></button></div></section><section class="tool-panel history-panel"><div class="side-heading"><strong>Recent calculations</strong><span id="history-count">0 SAVED</span></div><div id="history-list" class="history-empty">Your completed calculations will appear here.</div></section></div></section><div class="footer-line"><span>ACIO CALCULATOR · ALL CALCULATIONS IN ONE</span><span>&copy; 2026 Himanshu Saini. All rights reserved.</span><span>Calculations happen in your browser</span></div>`}
+    function render(){const info=toolInfo[activeTool];crumb.textContent=activeTool==='basic'?'Standard':info.title;document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tool===activeTool));let body='';
+      if(activeTool==='basic'||activeTool==='scientific')body=calculatorMarkup(activeTool==='scientific');
+      if(activeTool==='percentage')body=percentageMarkup();if(activeTool==='converter')body=converterMarkup();if(activeTool==='date')body=dateMarkup();if(activeTool==='loan')body=loanMarkup();if(activeTool==='bmi')body=bmiMarkup();
+      content.innerHTML=baseMarkup(info,body);if(activeTool==='basic'||activeTool==='scientific')updateDisplay();if(activeTool==='converter')convertUnits();renderHistory();content.querySelectorAll('[data-jump]').forEach(b=>b.addEventListener('click',()=>selectTool(b.dataset.jump)));bindToolForm();}
+    function calculatorMarkup(scientific){return `<div class="calculator-body"><div class="display" aria-live="polite"><div class="expression" id="expression">${scientific?'sin(π ÷ 2)':''}</div><div class="result" id="result">${scientific?'1':'0'}</div></div><div class="scientific-keys ${scientific?'visible':''}" id="scientific-keys">${[['sin(','sin'],['cos(','cos'],['tan(','tan'],['√(','√'],['log(','log'],['ln(','ln'],['π','π'],['^','xʸ']].map(([v,l])=>`<button class="key sci" data-value="${v}">${l}</button>`).join('')}</div><div class="keypad">${[['AC','utility'],['±','utility'],['%','utility'],['÷','operator'],['7',''],['8',''],['9',''],['×','operator'],['4',''],['5',''],['6',''],['−','operator'],['1',''],['2',''],['3',''],['+','operator'],['⌫','utility'],['0',''],['.',''],['=','equals']].map(([v,c])=>`<button class="key ${c}" data-key="${v}">${v}</button>`).join('')}</div><div class="calc-footer"><span>Keyboard supported</span><span><kbd>Enter</kbd> calculate &nbsp; <kbd>Esc</kbd> clear</span></div></div>`}
+    function percentageMarkup(){return `<div class="form-body"><form id="percentage-form"><div class="form-grid"><div class="field"><label for="percent">Percentage</label><div class="input-with-unit"><input id="percent" type="number" step="any" value="15" required><span class="unit-suffix">%</span></div></div><div class="field"><label for="percent-of">Of number</label><input id="percent-of" type="number" step="any" value="240" required></div><div class="field full"><label for="change-from">Or calculate percentage change</label><div class="form-grid"><input id="change-from" type="number" step="any" placeholder="Starting value"><input id="change-to" type="number" step="any" placeholder="New value"></div></div></div><button class="form-submit">Calculate percentage</button><div class="answer-box" id="answer"></div></form><p class="note">Percentage change is measured relative to the starting value.</p></div>`}
+    const unitGroups={Length:{Meter:1,Kilometer:1000,Centimeter:.01,Millimeter:.001,Mile:1609.344,Yard:.9144,Foot:.3048,Inch:.0254},Weight:{Kilogram:1,Gram:.001,Milligram:.000001,Pound:.45359237,Ounce:.028349523125,Tonne:1000},Temperature:{Celsius:1,Fahrenheit:1,Kelvin:1},Area:{'Square meter':1,'Square kilometer':1e6,'Square centimeter':.0001,'Square foot':.09290304,Acre:4046.8564224,Hectare:10000},Digital:{Byte:1,Kilobyte:1000,Megabyte:1e6,Gigabyte:1e9,Terabyte:1e12,'Kibibyte (KiB)':1024,'Mebibyte (MiB)':1048576}};
+    function converterMarkup(){return `<div class="form-body"><div class="field"><label for="unit-category">Category</label><select id="unit-category">${Object.keys(unitGroups).map(x=>`<option>${x}</option>`).join('')}</select></div><div class="unit-input-row"><div class="field"><label for="unit-from">From</label><select id="unit-from"></select></div><div class="field"><label for="unit-to">To</label><select id="unit-to"></select></div></div><div class="field" style="margin-top:15px"><label for="unit-amount">Amount</label><input id="unit-amount" type="number" step="any" value="1"></div><div class="unit-output" id="unit-output"><div class="answer-label">Converted value</div><div class="answer-value" id="unit-result">1,000</div></div><p class="note">Digital storage includes both decimal (kB) and binary (KiB) units.</p></div>`}
+    function dateMarkup(){const today=new Date().toISOString().slice(0,10);return `<div class="form-body"><form id="date-form"><div class="field"><label for="date-mode">Calculation</label><select id="date-mode"><option value="difference">Days between two dates</option><option value="add">Add or subtract days from a date</option></select></div><div class="form-grid" style="margin-top:15px"><div class="field"><label for="date-start">Start date</label><input id="date-start" type="date" value="${today}" required></div><div class="field" id="date-end-field"><label for="date-end">End date</label><input id="date-end" type="date" value="${today}" required></div><div class="field full" id="date-days-field" style="display:none"><label for="date-days">Days to add (use a minus sign to subtract)</label><input id="date-days" type="number" step="1" value="30"></div></div><button class="form-submit">Calculate dates</button><div class="answer-box" id="answer"></div></form><p class="note">Date differences use calendar days and do not count the end date inclusively.</p></div>`}
+    function loanMarkup(){return `<div class="form-body"><form id="loan-form"><div class="form-grid"><div class="field full"><label for="loan-amount">Loan amount</label><div class="input-with-unit"><input id="loan-amount" type="number" min="0" step="any" value="250000" required><span class="unit-suffix">$</span></div></div><div class="field"><label for="loan-rate">Annual interest rate</label><div class="input-with-unit"><input id="loan-rate" type="number" min="0" step="any" value="6.5" required><span class="unit-suffix">%</span></div></div><div class="field"><label for="loan-years">Loan term</label><div class="input-with-unit"><input id="loan-years" type="number" min="0.1" step="any" value="30" required><span class="unit-suffix">years</span></div></div></div><button class="form-submit">Estimate repayments</button><div class="answer-box" id="answer"></div></form><p class="note">Estimate excludes taxes, insurance, fees, and any changes to the interest rate.</p></div>`}
+    function bmiMarkup(){return `<div class="form-body"><form id="bmi-form"><div class="form-grid"><div class="field"><label for="height">Height</label><div class="input-with-unit"><input id="height" type="number" min="1" step="any" value="170" required><span class="unit-suffix">cm</span></div></div><div class="field"><label for="weight">Weight</label><div class="input-with-unit"><input id="weight" type="number" min="1" step="any" value="65" required><span class="unit-suffix">kg</span></div></div></div><button class="form-submit">Calculate BMI</button><div class="answer-box" id="answer"></div></form><p class="note">BMI is a screening measure for adults, not a diagnosis. It may not suit every body type.</p></div>`}
+    function showAnswer(value,detail=''){const box=document.querySelector('#answer');if(!box)return;box.innerHTML=`<div class="answer-label">Result</div><div class="answer-value">${value}</div>${detail?`<div class="answer-detail">${detail}</div>`:''}`;box.classList.add('show')}
+    function bindToolForm(){const category=document.querySelector('#unit-category');if(category){category.addEventListener('change',populateUnits);document.querySelector('#unit-from').addEventListener('change',convertUnits);document.querySelector('#unit-to').addEventListener('change',convertUnits);document.querySelector('#unit-amount').addEventListener('input',convertUnits);populateUnits()}
+      const mode=document.querySelector('#date-mode');if(mode)mode.addEventListener('change',()=>{const diff=mode.value==='difference';document.querySelector('#date-end-field').style.display=diff?'grid':'none';document.querySelector('#date-days-field').style.display=diff?'none':'grid'});
+      const p=document.querySelector('#percentage-form');if(p)p.addEventListener('submit',e=>{e.preventDefault();const percent=Number(document.querySelector('#percent').value),of=Number(document.querySelector('#percent-of').value),from=document.querySelector('#change-from').value,to=document.querySelector('#change-to').value;let detail=`${fmt(percent)}% of ${fmt(of)} = ${fmt(percent/100*of)}`;let value=fmt(percent/100*of);if(from!==''&&to!==''){const a=Number(from),b=Number(to);const change=a===0?null:(b-a)/Math.abs(a)*100;value=change===null?'Undefined (starting value is 0)':`${change>0?'+':''}${fmt(change)}%`;detail=`Change from ${fmt(a)} to ${fmt(b)} (${fmt(b-a)} ${b>=a?'increase':'decrease'})`;}showAnswer(value,detail)});
+      const d=document.querySelector('#date-form');if(d)d.addEventListener('submit',e=>{e.preventDefault();const start=new Date(`${document.querySelector('#date-start').value}T00:00:00`);if(document.querySelector('#date-mode').value==='add'){const days=Number(document.querySelector('#date-days').value);start.setDate(start.getDate()+days);const out=start.toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric',weekday:'long'});showAnswer(out,`${Math.abs(days)} day${Math.abs(days)===1?'':'s'} ${days<0?'before':'after'} the selected date.`)}else{const end=new Date(`${document.querySelector('#date-end').value}T00:00:00`);const days=Math.round((end-start)/86400000);showAnswer(`${Math.abs(days).toLocaleString()} day${Math.abs(days)===1?'':'s'}`,`${fmt(Math.abs(days)/7,1)} weeks${days<0?' · End date is before start date.':''}`)}});
+      const loan=document.querySelector('#loan-form');if(loan)loan.addEventListener('submit',e=>{e.preventDefault();const principal=Number(document.querySelector('#loan-amount').value),annual=Number(document.querySelector('#loan-rate').value)/100,months=Number(document.querySelector('#loan-years').value)*12;if(principal<=0||months<=0)return;const monthlyRate=annual/12,payment=monthlyRate===0?principal/months:principal*monthlyRate/(1-Math.pow(1+monthlyRate,-months)),total=payment*months;showAnswer(`$${fmt(payment,2)} / month`,`Total paid $${fmt(total,2)} · Total interest $${fmt(total-principal,2)} over ${fmt(months,0)} payments.`)});
+      const bmi=document.querySelector('#bmi-form');if(bmi)bmi.addEventListener('submit',e=>{e.preventDefault();const h=Number(document.querySelector('#height').value)/100,w=Number(document.querySelector('#weight').value);if(h<=0)return;const value=w/(h*h),range=value<18.5?'Below the standard adult range':value<25?'Within the standard adult range':value<30?'Above the standard adult range':'In the high adult range';showAnswer(fmt(value,1),range+' · Standard adult categories are a general guide.')});}
+    function populateUnits(){const group=unitGroups[document.querySelector('#unit-category').value],from=document.querySelector('#unit-from'),to=document.querySelector('#unit-to'),options=Object.keys(group);from.innerHTML=options.map(u=>`<option>${u}</option>`).join('');to.innerHTML=options.map(u=>`<option>${u}</option>`).join('');to.selectedIndex=Math.min(1,options.length-1);convertUnits()}
+    function convertUnits(){const category=document.querySelector('#unit-category')?.value;if(!category)return;const from=document.querySelector('#unit-from').value,to=document.querySelector('#unit-to').value,amount=Number(document.querySelector('#unit-amount').value||0);let result;if(category==='Temperature'){const c=from==='Celsius'?amount:from==='Fahrenheit'?(amount-32)*5/9:amount-273.15;result=to==='Celsius'?c:to==='Fahrenheit'?c*9/5+32:c+273.15}else result=amount*unitGroups[category][from]/unitGroups[category][to];document.querySelector('#unit-result').textContent=`${fmt(result,8)} ${to}`}
+    function renderHistory(){const list=document.querySelector('#history-list');if(!list)return;document.querySelector('#history-count').textContent=`${history.length} SAVED`;if(!history.length){list.className='history-empty';list.textContent='Your completed calculations will appear here.';return}list.className='history-list';list.innerHTML=history.slice(0,4).map(item=>`<div class="history-row"><span class="history-expression">${escapeHtml(item.expression)}</span><span class="history-result">${escapeHtml(item.result)}</span></div>`).join('')}
+    function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+    function selectTool(tool){if(!toolInfo[tool])return;activeTool=tool;content.classList.remove('content');void content.offsetWidth;content.classList.add('content');render();window.scrollTo({top:0,behavior:'smooth'})}
+    function updateDisplay(){const e=document.querySelector('#expression'),r=document.querySelector('#result');if(e)e.textContent=expression||' ';if(r)r.textContent=answer}
+    function addInput(value){if(justEvaluated&&!'+−×÷^%'.includes(value))expression='';justEvaluated=false;expression+=value;updateDisplay()}
+    function clearCalc(){expression='';answer='0';justEvaluated=false;updateDisplay()}
+    function pressKey(key){if(key==='AC'){clearCalc();return}if(key==='⌫'){expression=expression.slice(0,-1);justEvaluated=false;updateDisplay();return}if(key==='='){calculate();return}if(key==='±'){if(!expression){expression='−';updateDisplay();return}expression=expression.startsWith('−')?expression.slice(1):'−('+expression+')';updateDisplay();return}const map={'÷':'/','×':'*','−':'-'};addInput(map[key]||key)}
+    function tokenize(source){const normalized=source.replace(/×/g,'*').replace(/[÷]/g,'/').replace(/[−]/g,'-').replace(/π/g,'pi').replace(/√/g,'sqrt');const tokens=normalized.match(/(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?|[a-zA-Z]+|[()+\-*/%^]/g);if(!tokens||tokens.join('')!==normalized.replace(/\s+/g,''))throw Error('Invalid expression');return tokens}
+    function evaluate(source){const tokens=tokenize(source);let i=0;function expr(){return addSub()}function addSub(){let v=mulDiv();while(tokens[i]==='+'||tokens[i]==='-'){const op=tokens[i++],r=mulDiv();v=op==='+'?v+r:v-r}return v}function mulDiv(){let v=power();while(tokens[i]==='*'||tokens[i]==='/'){const op=tokens[i++],r=power();v=op==='*'?v*r:v/r}return v}function power(){let v=unary();if(tokens[i]==='^'){i++;v=Math.pow(v,power())}return v}function unary(){if(tokens[i]==='-'){i++;return-unary()}if(tokens[i]==='+'){i++;return unary()}let value=atom();while(tokens[i]==='%'){i++;value/=100}return value}function atom(){const t=tokens[i++];if(t==='('){const v=expr();if(tokens[i++]!==')')throw Error('Missing closing parenthesis');return v}if(!t)throw Error('Incomplete expression');if(/^(?:\d|\.)/.test(t))return Number(t);if(t==='pi')return Math.PI;if(t==='e')return Math.E;if(tokens[i]==='('){i++;const v=expr();if(tokens[i++]!==')')throw Error('Missing closing parenthesis');const f={sin:Math.sin,cos:Math.cos,tan:Math.tan,asin:Math.asin,acos:Math.acos,atan:Math.atan,sqrt:Math.sqrt,log:Math.log10,ln:Math.log,abs:Math.abs,floor:Math.floor,ceil:Math.ceil};if(!f[t])throw Error('Unknown function');return f[t](v)}throw Error('Unknown value')}const out=expr();if(i!==tokens.length||!Number.isFinite(out))throw Error('Check the expression');return out}
+    function calculate(){if(!expression)return;try{const value=evaluate(expression),result=fmt(value,10);history.unshift({expression,result});history=history.slice(0,12);answer=result;justEvaluated=true;updateDisplay();renderHistory()}catch(e){answer='Error';updateDisplay();showToast(e.message||'Check the expression')}}
+    function showToast(message){const toast=document.querySelector('#toast');toast.textContent=message;toast.classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>toast.classList.remove('show'),1800)}
+    document.addEventListener('click',e=>{const nav=e.target.closest('[data-tool]');if(nav)selectTool(nav.dataset.tool);const key=e.target.closest('[data-key]');if(key)pressKey(key.dataset.key);const sci=e.target.closest('[data-value]');if(sci)addInput(sci.dataset.value)});
+    document.addEventListener('keydown',e=>{if(!['basic','scientific'].includes(activeTool)||e.target.matches('input,select'))return;if(/^[0-9.]$/.test(e.key)){addInput(e.key);return}const keys={'+':'+','-':'−','*':'×','/':'÷','%':'%','Enter':'=','Backspace':'⌫','Escape':'AC','(': '(',')':')','^':'^'};if(keys[e.key]){e.preventDefault();pressKey(keys[e.key])}});
+    render();
+  </script>
+</body>
+</html>
